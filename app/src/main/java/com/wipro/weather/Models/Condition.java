@@ -1,11 +1,17 @@
 package com.wipro.weather.Models;
 
+import com.google.gson.annotations.Expose;
+
 import java.io.Serializable;
 
-public class Condition implements Serializable{
+public class Condition implements Serializable {
+    @Expose
     private String code;
+    @Expose
     private String date;
+    @Expose
     private String temp;
+    @Expose
     private String text;
 
 

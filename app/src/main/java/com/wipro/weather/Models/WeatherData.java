@@ -1,9 +1,11 @@
 package com.wipro.weather.Models;
 
+import com.google.gson.annotations.Expose;
+
 import java.io.Serializable;
 
 public class WeatherData implements Serializable{
-    private Query query;
+    @Expose private Query query;
 
     public Query getQuery() {
         return query;

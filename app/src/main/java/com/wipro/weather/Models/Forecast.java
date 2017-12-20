@@ -1,14 +1,21 @@
 package com.wipro.weather.Models;
 
+import com.google.gson.annotations.Expose;
+
 import java.io.Serializable;
 
 public class Forecast implements Serializable {
-
+    @Expose
     private String code;
+    @Expose
     private String date;
+    @Expose
     private String day;
+    @Expose
     private String high;
+    @Expose
     private String low;
+    @Expose
     private String text;
 
 

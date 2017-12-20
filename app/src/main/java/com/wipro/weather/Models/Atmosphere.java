@@ -1,12 +1,17 @@
 package com.wipro.weather.Models;
 
+import com.google.gson.annotations.Expose;
+
 import java.io.Serializable;
 
 public class Atmosphere implements Serializable {
-
+    @Expose
     private String humidity;
+    @Expose
     private String pressure;
+    @Expose
     private String rising;
+    @Expose
     private String visibility;
 
     public String getHumidity() {

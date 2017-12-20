@@ -1,11 +1,14 @@
 package com.wipro.weather.Models;
 
 
+import com.google.gson.annotations.Expose;
+
 import java.io.Serializable;
 
 public class Guid implements Serializable {
-
+    @Expose
     private String isPermaLink;
+    @Expose
     private String content;
 
 

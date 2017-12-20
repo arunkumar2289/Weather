@@ -1,35 +1,37 @@
 package com.wipro.weather.Models;
 
+import com.google.gson.annotations.Expose;
+
 import java.io.Serializable;
 
 
 public class Channel implements Serializable {
-
-    private  String title;
-   
-    private  String link;
-   
-    private  String description;
-   
-    private  String language;
-   
-    private  String lastBuildDate;
-   
-    private  String ttl;
-   
-    private  Location location;
-   
-    private  Units units;
-   
-    private  Wind wind;
-   
-    private  Atmosphere atmosphere;
-   
-    private  Astronomy astronomy;
-   
-    private  Image image;
-   
-    private  Item item;
+    @Expose
+    private String title;
+    @Expose
+    private String link;
+    @Expose
+    private String description;
+    @Expose
+    private String language;
+    @Expose
+    private String lastBuildDate;
+    @Expose
+    private String ttl;
+    @Expose
+    private Location location;
+    @Expose
+    private Units units;
+    @Expose
+    private Wind wind;
+    @Expose
+    private Atmosphere atmosphere;
+    @Expose
+    private Astronomy astronomy;
+    @Expose
+    private Image image;
+    @Expose
+    private Item item;
 
     public String getTitle() {
         return title;

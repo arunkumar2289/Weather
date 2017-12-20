@@ -1,11 +1,14 @@
 package com.wipro.weather.Models;
 
+import com.google.gson.annotations.Expose;
+
 import java.io.Serializable;
 
 public class Astronomy implements Serializable {
-
-   private String sunrise;
-   private String sunset;
+    @Expose
+    private String sunrise;
+    @Expose
+    private String sunset;
 
     public String getSunrise() {
         return sunrise;

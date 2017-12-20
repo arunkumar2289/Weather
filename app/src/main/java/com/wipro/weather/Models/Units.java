@@ -1,18 +1,19 @@
 package com.wipro.weather.Models;
 
+import com.google.gson.annotations.Expose;
+
 import java.io.Serializable;
 
 
-
 public class Units implements Serializable {
-
-    private  String distance;
-
-    private  String pressure;
-
-    private  String speed;
-
-    private  String temperature;
+    @Expose
+    private String distance;
+    @Expose
+    private String pressure;
+    @Expose
+    private String speed;
+    @Expose
+    private String temperature;
 
     public String getDistance() {
         return distance;

@@ -1,11 +1,16 @@
 package com.wipro.weather.Models;
 
+import com.google.gson.annotations.Expose;
+
 import java.io.Serializable;
 
 
 public class Wind implements Serializable {
+    @Expose
     private String chill;
+    @Expose
     private String direction;
+    @Expose
     private String speed;
 
     public String getChill() {

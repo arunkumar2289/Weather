@@ -1,12 +1,16 @@
 package com.wipro.weather.Models;
 
+import com.google.gson.annotations.Expose;
+
 import java.io.Serializable;
 import java.util.List;
 
 public class Item implements Serializable {
-
+    @Expose
     private String title;
+    @Expose
     private String lat;
+    @Expose
     private String lng;
 
     public String getLng() {
@@ -17,11 +21,17 @@ public class Item implements Serializable {
         this.lng = lng;
     }
 
+    @Expose
     private String link;
+    @Expose
     private String pubDate;
+    @Expose
     private String description;
+    @Expose
     private Condition condition;
-    private List<Forecast>forecast;
+    @Expose
+    private List<Forecast> forecast;
+    @Expose
     private Guid guid;
 
 

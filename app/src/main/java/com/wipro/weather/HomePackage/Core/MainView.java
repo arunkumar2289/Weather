@@ -1,4 +1,5 @@
-package com.wipro.weather;
+package com.wipro.weather.HomePackage.Core;
+
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,37 +9,42 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 import com.wipro.weather.HomePackage.HomeContract;
 import com.wipro.weather.HomePackage.HomePresenter;
+import com.wipro.weather.HomePackage.MainActivity;
 import com.wipro.weather.Models.WeatherData;
+import com.wipro.weather.R;
+import com.wipro.weather.Utils.UiUtils;
 import com.wipro.weather.Utils.WeatherToImage;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements HomeContract.View {
+public class MainView {
 
-    private final int RC_ENABLE_LOCATION = 1;
-    private final int RC_LOCATION_PERMISSION = 2;
+    private View view;
+
+    public final int RC_ENABLE_LOCATION = 1;
+    public final int RC_LOCATION_PERMISSION = 2;
 
     private HomeContract.Presenter mPresenter;
 
-    private LocationManager mLocationManager;
+    public LocationManager mLocationManager;
+
 
     @BindView(R.id.swipe_refresh_layout)
-    SwipeRefreshLayout mSwipeRefreshLayout;
+    public SwipeRefreshLayout mSwipeRefreshLayout;
 
     @BindView(R.id.temperature_text_view)
     TextView temperatureTextView;
@@ -61,25 +67,28 @@ public class MainActivity extends AppCompatActivity implements HomeContract.View
     View fourthDayView;
     @BindView(R.id.fifth_day)
     View fifthDayView;
+    private Location mLocation;
 
     @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
 
-    private Location mLocation;
+    MainActivity context;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (checkAndAskForLocationPermissions()) {
-            checkGpsEnabledAndPrompt();
-        }
+    public MainView(MainActivity context) {
+        FrameLayout parent = new FrameLayout(context);
+        parent.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        view = LayoutInflater.from(context).inflate(R.layout.activity_main, parent, true);
+        ButterKnife.bind(view, context);
+        mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
+        this.context = context;
         mPresenter = new HomePresenter();
-        mPresenter.subscribe(this);
+        mPresenter.subscribe(context);
         initViews();
+    }
 
+    public View constructView() {
+        return view;
     }
 
     private void initViews() {
@@ -102,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements HomeContract.View
 
     }
 
-    private LocationListener mLocationListener = (LocationListener) (new LocationListener() {
+    public LocationListener mLocationListener = (LocationListener) (new LocationListener() {
         public void onLocationChanged(Location location) {
             if (mSwipeRefreshLayout != null) {
                 mSwipeRefreshLayout.setRefreshing(true);
@@ -131,16 +140,8 @@ public class MainActivity extends AppCompatActivity implements HomeContract.View
         }
     });
 
-    public void onStoredDataFetched(WeatherData weatherData) {
-        updateUI(weatherData);
-    }
 
-    public void onDataFetched(WeatherData weatherData) {
-        mSwipeRefreshLayout.setRefreshing(false);
-        updateUI(weatherData);
-    }
-
-    private void updateUI(WeatherData weather) {
+    public void updateUI(WeatherData weather) {
 
         cityNameTextView.setText(weather.getQuery().getResults().getChannel().getLocation().getCity());
         temperatureTextView.setText(weather.getQuery().getResults().getChannel().getItem().getCondition().getTemp() + " " + weather.getQuery().getResults().getChannel().getUnits().getTemperature());
@@ -158,93 +159,19 @@ public class MainActivity extends AppCompatActivity implements HomeContract.View
 
     public void onError() {
         mSwipeRefreshLayout.setRefreshing(false);
-        final Snackbar retrySnackBar = Snackbar.make(coordinatorLayout, "Unable to fetch weather data.", -2);
-        retrySnackBar.setAction("Retry", (new View.OnClickListener() {
-            public final void onClick(android.view.View v) {
-                if (mPresenter != null) {
-                    double latitude = mLocation != null ? mLocation.getLatitude() : 0.0D;
-                    mPresenter.refresh(latitude, mLocation != null ? mLocation.getLongitude() : 0.0D);
-                }
-                mSwipeRefreshLayout.setRefreshing(true);
-                retrySnackBar.dismiss();
-            }
-        }));
-        retrySnackBar.setActionTextColor(ContextCompat.getColor((Context) this, R.color.colorPrimary));
-        retrySnackBar.show();
+        UiUtils.showSnackbar(coordinatorLayout,"Unable to fetch weather data.",-2);
     }
 
-    protected void onDestroy() {
-        super.onDestroy();
-
+    public void onDestroy() {
         if (mPresenter != null) {
             mPresenter.unSubscribe();
         }
-
         if (mLocationManager != null) {
             mLocationManager.removeUpdates(mLocationListener);
         }
 
     }
 
-    private void checkGpsEnabledAndPrompt() {
-        boolean isLocationEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        if (!isLocationEnabled) {
-            new AlertDialog.Builder(this).setCancelable(false).setTitle("GPS is not enabled").setMessage("This app required GPS to get the weather information. Do you want to enable GPS?").setPositiveButton(17039370, (android.content.DialogInterface.OnClickListener) (new android.content.DialogInterface.OnClickListener() {
-                public final void onClick(DialogInterface dialog, int which) {
-                    Intent intent = new Intent("android.settings.LOCATION_SOURCE_SETTINGS");
-                    startActivityForResult(intent, RC_ENABLE_LOCATION);
-                    dialog.dismiss();
-                }
-            })).create().show();
-        } else {
-            this.requestLocationUpdates();
-        }
-
-    }
-
-    private void requestLocationUpdates() {
-        String provider = "network";
-        if (this.mLocationManager != null) {
-            mLocationManager.requestLocationUpdates(provider, 0L, 0.0F, mLocationListener);
-        }
-
-        Location location = mLocationManager != null ? mLocationManager.getLastKnownLocation(provider) : null;
-        mLocationListener.onLocationChanged(location);
-    }
-
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_ENABLE_LOCATION) {
-            checkGpsEnabledAndPrompt();
-        }
-
-    }
-
-    private boolean checkAndAskForLocationPermissions() {
-        if (Build.VERSION.SDK_INT >= 23 && this.checkSelfPermission("android.permission.ACCESS_FINE_LOCATION") != PackageManager.PERMISSION_GRANTED) {
-            Object[] elementsiv = new String[]{"android.permission.ACCESS_FINE_LOCATION"};
-            requestPermissions((String[]) elementsiv, this.RC_LOCATION_PERMISSION);
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == RC_LOCATION_PERMISSION) {
-            if (grantResults[0] == 0) {
-                checkGpsEnabledAndPrompt();
-            } else {
-                checkAndAskForLocationPermissions();
-            }
-        }
-    }
-
-    @Override
-    public Context getContext() {
-        return this;
-    }
 
     private void setValue(View view, int position, WeatherData weather) {
         TextView otherDays = view.findViewById(R.id.day_text_view);
@@ -254,4 +181,6 @@ public class MainActivity extends AppCompatActivity implements HomeContract.View
         otherTemperature.setText(weather.getQuery().getResults().getChannel().getItem().getForecast().get(position).getHigh());
         otherTempImage.setImageResource(WeatherToImage.getImageForCode(weather.getQuery().getResults().getChannel().getItem().getForecast().get(position).getCode()));
     }
+
+
 }

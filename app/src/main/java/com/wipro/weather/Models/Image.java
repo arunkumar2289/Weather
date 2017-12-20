@@ -1,18 +1,20 @@
 package com.wipro.weather.Models;
 
+import com.google.gson.annotations.Expose;
+
 import java.io.Serializable;
 
 
 public class Image implements Serializable {
-
+    @Expose
     private  String title;
-   
+    @Expose
     private  String width;
-   
+    @Expose
     private  String height;
-   
+    @Expose
     private  String link;
-   
+    @Expose
     private  String url;
 
     public String getTitle() {

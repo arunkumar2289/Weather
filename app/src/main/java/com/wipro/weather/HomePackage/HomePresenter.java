@@ -28,6 +28,7 @@ public class HomePresenter implements HomeContract.Presenter {
 
     @Override
     public void refresh(double lat, double lng) {
+
         NetworkService.INSTANCE.getMetaWeatherApi().
                 getLocationDetails(Constants.INSTANCE.getAPIKEY(), Constants.INSTANCE.getTYPE_TEXT_PLAIN(), lat, lng).
                 subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<WeatherData>() {

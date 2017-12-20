@@ -1,14 +1,16 @@
 package com.wipro.weather.Models;
 
+import com.google.gson.annotations.Expose;
+
 import java.io.Serializable;
 
 
 public class Location implements Serializable {
-
+    @Expose
     private String city;
-
+    @Expose
     private String country;
-
+    @Expose
     private String region;
 
     public String getCity() {
